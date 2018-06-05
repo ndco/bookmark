@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import ListView from './listView';
 import { Route, Redirect, Switch } from 'react-router-dom'
+import socketIOClient from "socket.io-client";
 
 import axios from 'axios';
+
+const socket = socketIOClient("http://localhost:3001");
 
 class SearchList extends Component {
     constructor(props) {
@@ -15,7 +18,6 @@ class SearchList extends Component {
 
     getInfo = (data) => {
         return new Promise(function(resolve, reject) {
-            console.log(data)
             axios.get(`/products/${data}`)
                 .then(({ data }) => {
                         resolve(data);
@@ -65,11 +67,13 @@ class SearchList extends Component {
             let rObj = { ...item };
             return rObj;
         })
-        console.log(updatedList)
+
         this.setState({
             results: updatedList
         })
     }
+
+    
 
     handleInputSubmit = (e) => {
         e.preventDefault();
@@ -87,7 +91,24 @@ class SearchList extends Component {
         })
     }
 
+
+    updatePrice = () => {
+        const socket = socketIOClient("http://localhost:3001");
+
+        socket.on("update price", data => {
+            const newResults = this.state.results.map(item => {
+                if (item.id === data.id && item.isBookmarked == true) {
+                    item.bsStyle = "warning";
+                }
+            })
+            console.log(newResults)
+        });
+    }
+
     render() {
+        const socket = socketIOClient("http://localhost:3001");
+
+
         return (
             <div>
                 <form onSubmit={this.handleInputSubmit}>

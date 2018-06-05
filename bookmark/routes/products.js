@@ -90,9 +90,9 @@ router.get('/admin/:productId/:priceVal', function (req, res) {
         .then(data => {
             data.update({
                 price: req.params.priceVal
+            }).then(result => {
+                res.send(result)
             })
-        }).then(result => {
-            res.send(result)
         })
 })
 

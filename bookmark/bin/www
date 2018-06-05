@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('bookmark:server');
 var http = require('http');
+const socketIO = require("socket.io");
 
 /**
  * Get port from environment and store in Express.
@@ -21,11 +22,28 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+// This creates our socket using the instance of the server
+const io = socketIO(server);
+
+// This is what the socket.io syntax is like, we will work this later
+io.on('connection', socket => {
+  console.log('User connected')
+
+  socket.on('update price', data => {
+    console.log('we are getting the data!!!')
+    socket.broadcast.emit('update price', data)
+  });
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+})
+
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, () => console.log(`Listening on port ${port}`));
 server.on('error', onError);
 server.on('listening', onListening);
 
