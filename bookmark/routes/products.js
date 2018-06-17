@@ -8,21 +8,6 @@ const Op = sequelize.Op
 const { token } = require('../apikey');
 var Products = require('../models/index').product;
 
-var authOptions = {
-    url: 'https://api.priceapi.com/jobs',
-    method: 'GET',
-    form: {
-        token: token,
-        source: 'google-shopping',
-        country: 'us',
-        currentness: 'daily_updated',
-        completeness: 'one_page',
-        key: 'keyword',
-        values: 'iphone x'
-    },
-    json: true
-};
-
 
 function getStatus(job_id) {
     request(`https://api.priceapi.com/jobs/${job_id}?token=${token}`).then(function (data) {
@@ -39,7 +24,7 @@ function getData(job_id) {
     }).then(function (result) {
         let newResult = [];
         let product = result.products[0].offers
-        const { job_id, products: [{ source, image_url }] } = result;
+        const { job_id, products: [{ source, image_url, name }] } = result;
         product.forEach(element => {
             let result = normalizeData(element);
             let obj = {
@@ -47,6 +32,11 @@ function getData(job_id) {
                 image_url,
                 ...result
             };
+
+            if (obj.name == null) {
+                console.log(name)
+                obj.name = name
+            }
             newResult.push(obj)
         });
         return newResult
@@ -72,6 +62,38 @@ function normalizeData(result) {
     };
 };
 
+
+//test for google shopping
+router.get('/test', function (req, res) {
+    const job_id ='5b232192d50253689eaf509c';
+    const statusInterval = setInterval(function () {
+            request(`https://api.priceapi.com/jobs/${job_id}?token=${token}`).then(function (data) {
+                return JSON.parse(data);
+            }).then(function (result) {
+                console.log('validating...')
+                if (result.status === 'finished') {
+                    console.log('success')
+                    clearInterval(statusInterval);
+                    return result.job_id
+                }
+                else {
+                    console.log('failed... trying again')
+                    //return result .then catch error
+                }
+            })
+                .then(job_result => {
+                    console.log(job_result);
+                    getData(job_result)
+                })
+                .then(final_result => {
+                    Products.findAll()
+                        .then(result => {
+                            //read the error and then run 
+                            res.send(result)
+                        })
+                })
+        }, 2000)
+    })
 
 
 //For Admin Page
@@ -112,6 +134,7 @@ router.get('/:name/:source', function (req, res) {
         },
         json: true
     }).then(data => {
+        console.log(data.job_id)
         return data.job_id;
     }).then(job_id => {
         const statusInterval = setInterval(function () {
@@ -131,6 +154,7 @@ router.get('/:name/:source', function (req, res) {
                 }
             })
                 .then(job_result => {
+                    console.log(job_result);
                     getData(job_result)
                 })
                 .then(final_result => {

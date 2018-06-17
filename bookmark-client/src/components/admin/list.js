@@ -102,7 +102,7 @@ function onBeforeSaveCell(row, cellName, cellValue) {
                 Product Name
               </TableHeaderColumn>
               <TableHeaderColumn dataField="shop_name" width="40%">
-                Product Price
+                Shop Name
               </TableHeaderColumn>
               <TableHeaderColumn dataField="price" width="150" editable={{ type: "textarea" }}>
                 Product Price
