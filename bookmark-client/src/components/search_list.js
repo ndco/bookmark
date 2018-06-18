@@ -61,13 +61,15 @@ class SearchList extends Component {
                     item.isBookmarked = bookmarkList[i].isBookmarked
                     if (bookmarkList[i].isBookmarked == true) {
                         item.bsStyle = 'warning'
+                        if (bookmarkList[i].origin_price > bookmarkList[i].updated_price) {
+                            item.bsStyle = "danger";
+                        }
                     }
                 }
             }
             let rObj = { ...item };
             return rObj;
         })
-
         this.setState({
             results: updatedList
         })

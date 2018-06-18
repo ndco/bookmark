@@ -20,7 +20,15 @@ function onAfterSaveCell(row, cellName, cellValue) {
     axios.get(`/products/admin/${row.id}/${cellValue}`)
         .then(({ data }) => {
             socket.emit('update price', data)
+        }).then(() => {
+            axios.post(`/bookmarks/test/admin/${row.id}/${cellValue}`)
+                .then(({ data }) => {
+                    console.log(data)
+                })
+            
         })
+
+
 }
 
 function onBeforeSaveCell(row, cellName, cellValue) {

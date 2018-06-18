@@ -13,8 +13,9 @@ class AdminListItem extends Component {
     }
 
     updateBookmark = () => {
-        console.log(this.state.isBookmarked + ' ' + this.props.id)
-        axios.post(`/bookmarks/${this.props.id}/${this.state.isBookmarked}`)
+        console.log('test')
+        console.log(this.state.isBookmarked + ' ' + this.state.id)
+        axios.post(`/bookmarks/${this.state.id}/${this.state.isBookmarked}/${this.state.price}`)
             .then(function (response) {
             })
             .catch(function (error) {

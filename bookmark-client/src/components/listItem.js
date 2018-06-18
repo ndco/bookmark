@@ -15,8 +15,8 @@ class ListItem extends Component {
     }
 
     updateBookmark = () => {
-        console.log(this.state.isBookmarked+' '+this.props.id)
-        axios.post(`/bookmarks/${this.props.id}/${this.state.isBookmarked}`)
+        console.log(this.state.isBookmarked+' '+this.props.id + ' ' + this.state.price)
+        axios.post(`/bookmarks/${this.props.id}/${this.state.isBookmarked}/${this.state.price}`)
             .then(function (response) {
             })
             .catch(function (error) {
@@ -56,7 +56,8 @@ class ListItem extends Component {
             console.log(data)
             if (data.id === this.state.id && this.state.isBookmarked == true) {
                 this.setState({
-                    bsStyle: 'danger'
+                    bsStyle: 'danger',
+                    price: data.price
                 })
             }
         })
